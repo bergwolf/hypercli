@@ -188,7 +188,12 @@ func (cli *DockerCli) initSpecialVolumes(config *container.Config, hostConfig *c
 		switch volType {
 		case "git":
 			source, branch := parseGitSource(vol.Source)
-			cmd = append(cmd, "git", "clone", source, "-b", branch, INIT_VOLUME_PATH+vol.Destination)
+			// Only need to clone for the very first time volume gets initialized
+			if config.Image != "" {
+				cmd = append(cmd, "git", "clone", source, "-b", branch, INIT_VOLUME_PATH+vol.Destination)
+			} else {
+				cmd = append(cmd, "sh", "-c", "cd "+INIT_VOLUME_PATH+vol.Destination+" && git pull")
+			}
 		case "http":
 			isFile, err := fileSourceVolume(vol.Source)
 			if err != nil {
