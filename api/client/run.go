@@ -141,9 +141,7 @@ func (cli *DockerCli) initSpecialVolumes(config *container.Config, hostConfig *c
 		User:       config.User,
 		Image:      INIT_VOLUME_IMAGE,
 		StopSignal: config.StopSignal,
-		Labels: map[string]string{
-			"reload": "yes",
-		},
+		Labels:     config.Labels,
 	}
 
 	initHostConfig = &container.HostConfig{

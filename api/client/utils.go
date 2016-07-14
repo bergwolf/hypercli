@@ -312,13 +312,19 @@ func (cli *DockerCli) containerFilterInitVolumes(containerID string) ([]*InitVol
 
 func (cli *DockerCli) containerReloadInitVolumes(initvols []*InitVolume) error {
 	var (
-		config           container.Config
+		config           *container.Config
 		hostConfig       container.HostConfig
 		networkingConfig networktypes.NetworkingConfig
 	)
 
-	config.StopSignal = "SIGTERM"
-	err := cli.initSpecialVolumes(&config, &hostConfig, &networkingConfig, initvols)
+	config = &container.Config{
+		StopSignal: "SIGTERM",
+		Labels: map[string]string{
+			"reload": "yes",
+		},
+	}
+
+	err := cli.initSpecialVolumes(config, &hostConfig, &networkingConfig, initvols)
 	if err != nil {
 		return err
 	}
